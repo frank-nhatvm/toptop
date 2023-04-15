@@ -1,5 +1,6 @@
 package com.nhatvm.toptop.ui.theme.video
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
@@ -11,9 +12,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import com.nhatvm.toptop.designsystem.TopTopVideoPlayer
 
-
+@UnstableApi
 @Composable
 fun VideoDetailScreen(
     viewModel: VideoDetailViewModel = hiltViewModel()
@@ -26,14 +28,19 @@ fun VideoDetailScreen(
 
     VideoDetailScreen(
         uiState = uiState.value,
-        player = viewModel.player
+        player = viewModel.player,
+        processAction = { action ->
+            viewModel.processAction(action)
+        }
     )
 }
 
+@UnstableApi
 @Composable
 fun VideoDetailScreen(
     uiState: VideoDetailUiState,
-    player: Player
+    player: Player,
+    processAction: (VideoDetailAction) -> Unit
 ) {
 
     when (uiState) {
@@ -43,7 +50,13 @@ fun VideoDetailScreen(
             }
         }
         is VideoDetailUiState.Success -> {
-            ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            ConstraintLayout(modifier = Modifier
+                .fillMaxSize()
+                .clickable(
+                    onClick = {
+                        processAction(VideoDetailAction.ToggleVideo)
+                    }
+                )) {
                 val videoPlayerView = createRef()
                 TopTopVideoPlayer(
                     player = player,

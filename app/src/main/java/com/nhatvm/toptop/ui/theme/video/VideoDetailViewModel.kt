@@ -1,10 +1,13 @@
 package com.nhatvm.toptop.ui.theme.video
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.RawResourceDataSource
+import androidx.media3.exoplayer.ExoPlayer
+import com.nhatvm.toptop.data.repository.VideoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,16 +15,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@UnstableApi
 @HiltViewModel
 class VideoDetailViewModel @Inject constructor(
-    val player: Player
+    val player: ExoPlayer,
+    private val videoRepository: VideoRepository
 ): ViewModel() {
 
     private var _uiState = MutableStateFlow<VideoDetailUiState>(VideoDetailUiState.Default)
     val uiState: StateFlow<VideoDetailUiState>
         get() = _uiState
 
+
     init {
+        player.repeatMode = REPEAT_MODE_ALL
+        player.playWhenReady = true
         player.prepare()
     }
 
@@ -29,6 +37,9 @@ class VideoDetailViewModel @Inject constructor(
         when (action) {
             is VideoDetailAction.LoadData -> {
                 loadVideo(action.id)
+            }
+            is VideoDetailAction.ToggleVideo -> {
+                toggleVideoPlayer()
             }
             else -> {
 
@@ -40,18 +51,29 @@ class VideoDetailViewModel @Inject constructor(
         _uiState.value = VideoDetailUiState.Loading
         viewModelScope.launch {
             delay(100L)
-//            playVideo("https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4")
-            playVideo("https://www.tiktok.com/@khaby.lame/video/7025632079081655558")
+            playVideo(videoRepository.getVideo())
             _uiState.value = VideoDetailUiState.Success
         }
     }
 
-    private fun playVideo(videoUrl: String) {
-        val uri = Uri.parse(videoUrl)
+    private fun playVideo(videoResourceId: Int) {
+        val uri = RawResourceDataSource.buildRawResourceUri(videoResourceId)
         val mediaItem = MediaItem.fromUri(uri)
-        player.addMediaItem(mediaItem)
+        player.setMediaItem(mediaItem)
         player.play()
     }
+
+    private fun toggleVideoPlayer() {
+        if (player.isLoading) {
+
+        } else
+            if (player.isPlaying) {
+                player.pause()
+            } else {
+                player.play()
+            }
+    }
+
 
     override fun onCleared() {
         super.onCleared()

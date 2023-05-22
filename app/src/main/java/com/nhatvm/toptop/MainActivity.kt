@@ -10,10 +10,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.media3.common.util.UnstableApi
+import com.nhatvm.toptop.ui.foryou.ListForYouVideoScreen
 import com.nhatvm.toptop.ui.theme.ToptopTheme
-import com.nhatvm.toptop.ui.theme.video.VideoDetailScreen
 import dagger.hilt.android.AndroidEntryPoint
 
+@UnstableApi
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +27,7 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    VideoDetailScreen()
+                    ListForYouVideoScreen()
                 }
             }
         }

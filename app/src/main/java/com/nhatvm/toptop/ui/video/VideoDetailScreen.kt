@@ -1,4 +1,4 @@
-package com.nhatvm.toptop.ui.theme.video
+package com.nhatvm.toptop.ui.video
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,18 +16,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.nhatvm.toptop.designsystem.TopTopVideoPlayer
-import com.nhatvm.toptop.ui.theme.video.composables.VideoAttractiveInfo
-import com.nhatvm.toptop.ui.theme.video.composables.VideoInfoArea
+import com.nhatvm.toptop.ui.video.composables.VideoAttractiveInfo
+import com.nhatvm.toptop.ui.video.composables.VideoInfoArea
 
 @UnstableApi
 @Composable
 fun VideoDetailScreen(
-    viewModel: VideoDetailViewModel = hiltViewModel()
+    viewModel: VideoDetailViewModel = hiltViewModel(),
+    videoId: Int,
+    showCommentScreen: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsState()
 
     if (uiState.value == VideoDetailUiState.Default) {
-        viewModel.processAction(VideoDetailAction.LoadData(id = "10"))
+        viewModel.processAction(VideoDetailAction.LoadData(id = videoId))
     }
 
     VideoDetailScreen(
@@ -35,7 +37,8 @@ fun VideoDetailScreen(
         player = viewModel.player,
         processAction = { action ->
             viewModel.processAction(action)
-        }
+        },
+        showCommentScreen = showCommentScreen
     )
 }
 
@@ -44,7 +47,8 @@ fun VideoDetailScreen(
 fun VideoDetailScreen(
     uiState: VideoDetailUiState,
     player: ExoPlayer,
-    processAction: (VideoDetailAction) -> Unit
+    processAction: (VideoDetailAction) -> Unit,
+    showCommentScreen: () -> Unit
 ) {
 
     when (uiState) {
@@ -54,7 +58,11 @@ fun VideoDetailScreen(
             }
         }
         is VideoDetailUiState.Success -> {
-            VideoDetailScreen(player = player, processAction = processAction)
+            VideoDetailScreen(
+                player = player,
+                processAction = processAction,
+                showCommentScreen = showCommentScreen
+            )
         }
         else -> {
 
@@ -67,7 +75,8 @@ fun VideoDetailScreen(
 @Composable
 fun VideoDetailScreen(
     player: ExoPlayer,
-    processAction: (VideoDetailAction) -> Unit
+    processAction: (VideoDetailAction) -> Unit,
+    showCommentScreen: () -> Unit
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
@@ -96,7 +105,9 @@ fun VideoDetailScreen(
             },
             onAvatarClicked = {},
             onBookmarkClicked = {},
-            onCommentClicked = {},
+            onCommentClicked = {
+                showCommentScreen()
+            },
             onLikeClicked = {},
             onShareClicked = {},
         )

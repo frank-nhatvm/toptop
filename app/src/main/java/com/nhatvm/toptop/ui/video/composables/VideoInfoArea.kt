@@ -1,4 +1,4 @@
-package com.nhatvm.toptop.ui.theme.video.composables
+package com.nhatvm.toptop.ui.video.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.nhatvm.toptop.ui.theme.video
+package com.nhatvm.toptop.ui.video
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -47,7 +47,7 @@ class VideoDetailViewModel @Inject constructor(
         }
     }
 
-    private fun loadVideo(videoId: String) {
+    private fun loadVideo(videoId: Int) {
         _uiState.value = VideoDetailUiState.Loading
         viewModelScope.launch {
             delay(100L)
@@ -90,6 +90,6 @@ sealed interface VideoDetailUiState {
 }
 
 sealed class VideoDetailAction {
-    data class LoadData(val id: String): VideoDetailAction()
+    data class LoadData(val id: Int): VideoDetailAction()
     object ToggleVideo: VideoDetailAction()
 }

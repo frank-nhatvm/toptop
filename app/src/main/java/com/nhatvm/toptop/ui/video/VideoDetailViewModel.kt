@@ -1,5 +1,6 @@
 package com.nhatvm.toptop.ui.video
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -28,6 +29,7 @@ class VideoDetailViewModel @Inject constructor(
 
 
     init {
+        Log.e("Frank", "VideoDetailViewModel init ")
         player.repeatMode = REPEAT_MODE_ALL
         player.playWhenReady = true
         player.prepare()
@@ -40,6 +42,9 @@ class VideoDetailViewModel @Inject constructor(
             }
             is VideoDetailAction.ToggleVideo -> {
                 toggleVideoPlayer()
+            }
+            is VideoDetailAction.DisposeAction -> {
+                onDispose()
             }
             else -> {
 
@@ -74,8 +79,12 @@ class VideoDetailViewModel @Inject constructor(
             }
     }
 
+    private fun onDispose() {
+        player.release()
+    }
 
     override fun onCleared() {
+        Log.e("Frank", "VideoDetailViewModel onCleared")
         super.onCleared()
         player.release()
     }
@@ -92,4 +101,5 @@ sealed interface VideoDetailUiState {
 sealed class VideoDetailAction {
     data class LoadData(val id: Int): VideoDetailAction()
     object ToggleVideo: VideoDetailAction()
+    object DisposeAction: VideoDetailAction()
 }

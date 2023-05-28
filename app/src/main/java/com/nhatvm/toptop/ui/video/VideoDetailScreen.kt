@@ -3,7 +3,6 @@ package com.nhatvm.toptop.ui.video
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -21,6 +20,7 @@ import com.nhatvm.toptop.ui.video.composables.VideoInfoArea
 @UnstableApi
 @Composable
 fun VideoDetailScreen(
+    modifier: Modifier = Modifier,
     viewModel: VideoDetailViewModel,
     videoId: Int,
     showCommentScreen: (Int) -> Unit
@@ -81,7 +81,6 @@ fun VideoDetailScreen(
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
-        .padding(bottom = 56.dp)
         .clickable(
             onClick = {
                 processAction(VideoDetailAction.ToggleVideo)

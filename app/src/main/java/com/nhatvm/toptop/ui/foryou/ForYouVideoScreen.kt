@@ -78,6 +78,16 @@ fun ForYouVideoScreen(
         sheetBackgroundColor = Color.Transparent
     ) {
         Scaffold { paddingValues ->
+//            val viewModel: VideoDetailViewModel = hiltViewModel(key = videoId.toString())
+//            VideoDetailScreen(modifier = Modifier.padding(paddingValues),
+//                viewModel = viewModel,
+//                videoId = videoId,
+//                showCommentScreen = {
+//                    currentVideoId = videoId
+//                    showBottomSheet()
+//                }
+//            )
+
             ListForYouVideoScreen(
                 modifier = Modifier.padding(paddingValues),
                 showCommentScreen = { videoId ->

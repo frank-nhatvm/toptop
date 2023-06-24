@@ -1,6 +1,7 @@
 package com.nhatvm.toptop.ui.video
 
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
@@ -29,6 +30,7 @@ class VideoDetailViewModel @Inject constructor(
         get() = _uiState
 
     init {
+        Log.e("Frank", "VideoDetailViewModel init")
         videoPlayer.repeatMode = REPEAT_MODE_ALL
         videoPlayer.playWhenReady = true
         videoPlayer.prepare()
@@ -70,7 +72,11 @@ class VideoDetailViewModel @Inject constructor(
             if (videoPlayer.isPlaying)
                 videoPlayer.pause() else videoPlayer.play()
         }
+    }
 
+    override fun onCleared() {
+        super.onCleared()
+        videoPlayer.release()
     }
 
 }

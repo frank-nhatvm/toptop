@@ -6,13 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.media3.common.util.UnstableApi
+import com.nhatvm.toptop.ui.foryou.ListForUVideoScreen
 import com.nhatvm.toptop.ui.theme.ToptopTheme
-import com.nhatvm.toptop.ui.video.VideoDetailScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @UnstableApi
@@ -27,22 +24,9 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    VideoDetailScreen(videoId = 1)
+                    ListForUVideoScreen()
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ToptopTheme {
-        Greeting("Android")
     }
 }

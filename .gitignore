@@ -13,4 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
-/.idea/
+/.idea/compiler.xml
+/.idea/kotlinc.xml
+/.idea/misc.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml

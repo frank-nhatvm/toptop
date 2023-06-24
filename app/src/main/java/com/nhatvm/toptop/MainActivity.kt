@@ -8,7 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.media3.common.util.UnstableApi
-import com.nhatvm.toptop.ui.foryou.ListForUVideoScreen
+import com.nhatvm.toptop.ui.following.FollowingScreen
 import com.nhatvm.toptop.ui.theme.ToptopTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,7 +24,8 @@ class MainActivity: ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ListForUVideoScreen()
+//                    ListForUVideoScreen()
+                    FollowingScreen()
                 }
             }
         }

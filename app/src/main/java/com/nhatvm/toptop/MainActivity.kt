@@ -8,7 +8,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.media3.common.util.UnstableApi
-import com.nhatvm.toptop.ui.demo.DemoScaffoldScreen
+import com.nhatvm.toptop.ui.demo.DemoModalBottomSheetLayout
 import com.nhatvm.toptop.ui.theme.ToptopTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -25,7 +25,9 @@ class MainActivity: ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
 //                    MainScreen()
-                    DemoScaffoldScreen()
+//                    DemoModalBottomSheetM3()
+//                    DemoBottomSheetScaffold()
+                    DemoModalBottomSheetLayout()
                 }
             }
         }

@@ -10,18 +10,26 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,11 +41,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.media3.common.util.UnstableApi
+import com.nhatvm.toptop.R
+import com.nhatvm.toptop.ui.comment.CommentScreen
 import com.nhatvm.toptop.ui.following.FollowingScreen
 import com.nhatvm.toptop.ui.foryou.ListForUVideoScreen
 import com.nhatvm.toptop.ui.theme.ToptopTheme
@@ -45,9 +56,13 @@ import com.nhatvm.toptop.ui.user.ProfileScreen
 import kotlinx.coroutines.launch
 
 @UnstableApi
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun MainScreen() {
+
+    var currentVideoId by remember {
+        mutableStateOf(-1)
+    }
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -82,41 +97,121 @@ fun MainScreen() {
         }
     }
 
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
-    ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-        val (tabContentView, body) = createRefs()
-
-        HorizontalPager(modifier = Modifier.constrainAs(body) {
-            top.linkTo(parent.top)
-            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-            width = Dimension.fillToConstraints
-            height = Dimension.fillToConstraints
-        }, pageCount = 3, state = pagerState) { page ->
-            when (page) {
-                0 -> FollowingScreen()
-                2 -> ProfileScreen()
-                else -> ListForUVideoScreen()
-            }
-        }
-
-
-        AnimatedVisibility(visible = isShowTabContent) {
-            TabContentView(isTabSelectedIndex = pagerState.currentPage, onSelectedTab = { isForU ->
-                scrollToPage(isForU)
-            }, modifier = Modifier
-                .constrainAs(tabContentView) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    width = Dimension.fillToConstraints
-                }
-
-            )
+    val showCommentBottomSheet: (Int) -> Unit = { videoId ->
+        currentVideoId = videoId
+        coroutineScope.launch {
+            sheetState.show()
         }
     }
 
+    val hideCommentBottomSheet: () -> Unit = {
+        currentVideoId = -1
+        coroutineScope.launch {
+            sheetState.hide()
+        }
+    }
+
+    ModalBottomSheetLayout(sheetState = sheetState, sheetContent = {
+        if (currentVideoId != -1) {
+            CommentScreen(videoId = currentVideoId) {
+                // hide bottom sheet
+                hideCommentBottomSheet()
+            }
+        } else {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+    }) {
+
+        Scaffold(bottomBar = {
+            AnimatedVisibility(visible = isShowTabContent) {
+                TopTopBottomAppBar(onOpenHome = {}, onAddVideo = {})
+            }
+        }) { paddingValues ->
+            ConstraintLayout(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                val (tabContentView, body) = createRefs()
+
+                HorizontalPager(modifier = Modifier.constrainAs(body) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.fillToConstraints
+                }, pageCount = 3, state = pagerState) { page ->
+                    when (page) {
+                        0 -> FollowingScreen()
+                        2 -> ProfileScreen()
+                        else -> ListForUVideoScreen() { videoId ->
+                            showCommentBottomSheet(videoId)
+                        }
+                    }
+                }
+
+
+                AnimatedVisibility(visible = isShowTabContent) {
+                    TabContentView(isTabSelectedIndex = pagerState.currentPage,
+                        onSelectedTab = { isForU ->
+                            scrollToPage(isForU)
+                        },
+                        modifier = Modifier
+                            .constrainAs(tabContentView) {
+                                top.linkTo(parent.top)
+                                start.linkTo(parent.start)
+                                end.linkTo(parent.end)
+                                width = Dimension.fillToConstraints
+                            }
+
+                    )
+                }
+            }
+        }
+    }
+
+
+}
+
+@Composable
+fun TopTopBottomAppBar(
+    onOpenHome: () -> Unit,
+    onAddVideo: () -> Unit,
+
+    ) {
+    BottomAppBar(backgroundColor = Color.Black, contentColor = Color.White) {
+        BottomNavigationItem(selected = true, onClick = { onOpenHome() }, icon = {
+            Icon(painterResource(id = R.drawable.ic_home), "home")
+        }, label = {
+            Text("Home")
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(painterResource(id = R.drawable.ic_now), "Friends")
+        }, label = {
+            Text("Friends")
+        })
+
+        BottomNavigationItem(
+            selected = false, onClick = { onAddVideo() },
+            icon = {
+                Icon(painterResource(id = R.drawable.ic_add_video), "add more video")
+            },
+        )
+
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(painterResource(id = R.drawable.ic_inbox), "Inbox icon")
+        }, label = {
+            Text("Inbox")
+        })
+        BottomNavigationItem(selected = false, onClick = { /*TODO*/ }, icon = {
+            Icon(painterResource(id = R.drawable.ic_profile), "Profile")
+        }, label = {
+            Text("Profile")
+        })
+    }
 }
 
 

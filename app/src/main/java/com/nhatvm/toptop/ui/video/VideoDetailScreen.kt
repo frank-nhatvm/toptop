@@ -23,7 +23,8 @@ import com.nhatvm.toptop.ui.video.composables.VideoInfoArea
 @Composable
 fun VideoDetailScreen(
     videoId: Int,
-    vieModel: VideoDetailViewModel
+    vieModel: VideoDetailViewModel,
+    onShowComment: (Int) -> Unit
 ) {
 
     val uiState = vieModel.uiState.collectAsState()
@@ -33,7 +34,9 @@ fun VideoDetailScreen(
         vieModel.handleAction(VideoDetailAction.LoadData(videoId))
     }
 
-    VideoDetailScreen(uiState = uiState.value, player = vieModel.videoPlayer) { aciton ->
+    VideoDetailScreen(uiState = uiState.value, player = vieModel.videoPlayer, onShowComment = {
+        onShowComment(videoId)
+    }) { aciton ->
         vieModel.handleAction(action = aciton)
     }
 }
@@ -43,7 +46,8 @@ fun VideoDetailScreen(
 fun VideoDetailScreen(
     uiState: VideoDetailUiState,
     player: Player,
-    handleAction: (VideoDetailAction) -> Unit,
+    onShowComment: () -> Unit,
+    handleAction: (VideoDetailAction) -> Unit
 ) {
     when (uiState) {
         is VideoDetailUiState.Loading -> {
@@ -53,7 +57,11 @@ fun VideoDetailScreen(
         }
 
         is VideoDetailUiState.Success -> {
-            VideoDetailScreen(player = player, handleAction = handleAction)
+            VideoDetailScreen(
+                player = player,
+                handleAction = handleAction,
+                onShowComment = onShowComment
+            )
         }
 
         else -> {
@@ -68,6 +76,7 @@ fun VideoDetailScreen(
 fun VideoDetailScreen(
     player: Player,
     handleAction: (VideoDetailAction) -> Unit,
+    onShowComment: () -> Unit
 ) {
     ConstraintLayout(modifier = Modifier
         .fillMaxSize()
@@ -89,7 +98,7 @@ fun VideoDetailScreen(
         SideBarView(
             onAvatarClick = { /*TODO*/ },
             onLikeClick = { /*TODO*/ },
-            onChatClick = { /*TODO*/ },
+            onChatClick = onShowComment,
             onSaveClick = { /*TODO*/ },
             onShareClick = {},
             modifier = Modifier.constrainAs(sideBar) {
